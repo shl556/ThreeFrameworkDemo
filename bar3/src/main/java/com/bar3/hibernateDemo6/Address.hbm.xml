@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping
+PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping >
+
+  <class name="mypack.Address" table="ADDRESSES" >
+    <id name="id" type="long" column="ID">
+      <generator class="increment"/>
+    </id>
+    <!-- foreign标识符生成策略 -->
+   <!--  <id name="id" type="long" column="ID">
+      <generator class="foreign">
+        <param name="property">customer</param>
+      </generator>
+    </id> -->
+    <property name="city" column="CITY" type="string" />
+    <property name="province" column="PROVINCE" type="string" />
+    <property name="street" column="STREET" type="string" />
+    <property name="zipcode" column="ZIPCODE" type="string" />
+    <!-- one-to-one元素表示一对一关联 -->
+    <one-to-one name="customer" 
+        class="mypack.Customer"
+       property-ref="homeAddress"
+    />
+    <!-- constrained设为true表明Address表的id主键同时作为外键参照customer表，同时必须为OID使用foreign标识符
+    生成策略 -->
+   <!-- <one-to-one name="customer" 
+        class="mypack.Customer"
+       constrained="true"
+    /> -->
+  </class>
+</hibernate-mapping>

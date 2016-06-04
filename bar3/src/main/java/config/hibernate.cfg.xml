@@ -1,0 +1,141 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE hibernate-configuration
+ PUBLIC "-//Hibernate/Hibernate Configuration DTD//EN"
+ "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+
+<hibernate-configuration>
+<session-factory >
+<property name="dialect">
+       org.hibernate.dialect.MySQL5Dialect
+</property>
+<property name="connection.driver_class">
+      com.mysql.jdbc.Driver
+</property>
+<property name="connection.url">
+       jdbc:mysql://localhost:3306/sampledb?useUnicode=true&amp;characterEncoding=UTF8
+</property>
+<property name="connection.username">
+root
+</property>
+<property name="connection.password">
+shl556161
+</property>
+<!-- 
+尽量让一个Session对应一个事务，不管事务成功与否最后要关闭Sessin，让其清空 缓存，释放占用的连接；如果事务仅包含只读(select)操作，也应在执行成功后提交事务， 让数据库释放事务所占的资源.
+一个Session可以对应多个事务，这种方式优点中重用缓存中的持久化对象.
+在一个事务没提交之前，不可以开始第二个事务(不允许的);如果Session的一个 事务出现了异常，就应关闭这个Session。如果仍然用它执行其他事务是不可取的.
+ -->
+<!-- 设置Session管理方式，可选值为thread（Session对象与当前线程绑定）、jta（Session对象的生命周期与JTA事务绑定）、
+managed（Hibernate委托程序管理Session对象的生命周期）。使用getCurrentSession获取当前线程或者事务绑定的Session。 -->
+<!-- 在session与本地线程绑定的方式下，先出现session对象，再由session对象的beginTransaction()方法声明开始一个事务。而Session与JTA事务绑定的方式下
+先通过UserTransaction接口声明开始JTA事务，然后再出现于该JTA事务绑定的Session对象。在session与JTA事务绑定的方式下，如果试图使用Session对象的beginTransaction方法声明
+一个事务是非法的。 -->
+<!-- 使用jta事务时Session不需要跟jta事务绑定 -->
+<property name="current_session_context_class">thread</property>
+<!-- 设置数据库的隔离级别为Read Commited -->
+<property name="connection.isolation">2</property>
+<!-- 指定事务工厂类，默认为JDBCTransactionFactory -->
+<!-- <property name="transaction.factory_class"> org.hibernate.engine.transaction.internal.jdbc.JdbcTransactionFactory</property> -->
+<!-- 使用JTA事务,JTA事务必须在支持JTA事务的服务器中启动才可以运行 -->
+<!-- <property name="transaction.factory_class"> org.hibernate.engine.transaction.internal.jta.JtaTransactionFactory</property> -->
+<!--设置UserTransantion的JNDI路径  -->
+<!-- <property name="jta.UserTransaction">  
+   java:comp/UserTransaction
+</property> -->
+<!-- 设定容器中JTA TransactionManagerLookup的实现类 -->
+<!-- <property name="transaction.manager_lookup_class">org.hibernate.engine.transaction.jta.platform.internal.JBossStandAloneJtaPlatform</property>
+当通过UserTransaction的commit()方法提交事务时，该方法不会自动清理Session的缓存，需要调用Session的flush（）方法手工清理缓存,此外必须手动关闭Session。如果为true则在提交事务前自动清理缓存
+<property name="transaction.flush_before_completion">true</property>
+如果为true则在提交或者撤销事务后自动关闭Session
+<property name="transaction.auto_close_session"></property> -->
+<!-- 第一次加载hibernate时根据model类会自动建立起表的结构（前提是先建立好数据库），以后加载hibernate时根据 model类自动更新表结构，
+即使表结构改变了但表中的行仍然存在不会删除以前的行。要注意的是当部署到服务器后，表结构是不会被马上建立起来的，是要等 应用第一次运行起来后才会。 -->
+<property name="hbm2ddl.auto">update</property>
+<!--Hibernate自带的数据库连接池中不活跃的连接的最大数--> 
+<!-- <property name="connection.pool_size">10 </property>     -->
+<!--connection.useUnicode 连接数据库时是否使用Unicode编码--> 
+<property name="connection.useUnicode">true </property>
+<!--connection.characterEncoding连接数据库时数据的传输字符集编码方式，最好设置为gbk，用gb2312有的字符不全--> 
+<property name="connection.characterEncoding">UTF-8</property>   
+<!-- 显示合成的sql -->
+<property name="show_sql">true</property>
+<!-- 显示sql时进行格式化 -->
+<property name="format_sql">true</property>
+<!-- 允许在SQL日志中加入适当的注解 -->
+<property name="use_sql_comments">true</property>
+<!-- 
+控制session的delete()方法的行为，若为true则执行完delete方法后对象由持久化状态转化为
+临时状态，OID为null。默认为false，执行完delete()方法后该对象不可用
+ -->
+<property name="use_identifier_rollback">false</property>
+<!-- 
+设置底层jdbc单次批量处理的数目，合理的取值时10-50，默认为15。注意如果对象采用identify标识符
+生成器时，则Hibernate无法再jdbc层进行批量插入操作。同时批量处理时建议关闭二级缓存。
+ -->
+<property name="jdbc.batch_size">20</property>
+<!--jdbc.fetch_size是指Hibernate每次从数据库中取出并放到JDBC的Statement中的记录条数。Fetch Size设的越大，读数据库的次数越少，速度越快，
+　　　　　　    Fetch Size越小，读数据库的次数越多，速度越慢--> 
+<property name="jdbc.fetch_size">50 </property> 
+<!-- 
+Hibernate的二级缓存作为一个可插入的组件在使用的时候也是可以进行配置的，但并不是所有的对象都适合放在二级缓存中,在通常情况下会将具有以下特征的数据放入到二级缓存中:
+1.很少被修改的数据。2.不是很重要的数据，偶尔允许出现并发的数据。3.不会被并发访问的数据。4.参考数据。而具有以下特征的数据不适合放在二级缓存中：1.经常被修改的数据，因为
+二级缓存是全局共享的，经常访问的话容易造成并发问题。2.财务数据，绝对不允许出现并发问题。3.与其他应用共享的数据。
+ -->
+ <!-- 
+  在这里特别要注意的是对放入缓存中的数据不能有第三方的应用对数据进行更改（其中也包括在自己程序中使用其他方式进行数据的修改，例如，JDBC），因为那样Hibernate将不会知道数据已经被修改，
+  也就无法保证缓存中的数据与数据库中数据的一致性。另外如果我们只是取出对象的一些属性的话，则不会将其保存到二级缓存中去，因为二级缓存缓存的仅仅是对象。
+  条件修改，条件删除时（一般是执行HQL）会清空所有在缓存中的同类对象。如果你打算开启hibernate的二级缓存，在修改与删除时，就要使用session.update(),session.delete()方法按ID一条一条的操作，这样对二级缓存是最优的。
+  -->
+<!-- 表示显示关闭二级缓存，二级缓存在默认情况下是关闭的,默认为false-->
+<!-- <property name="cache.use_second_level_cache">true</property>
+指定缓存提供者对象,Hibernate3使用，Hibernate4不推荐使用
+<property name="cache.provider_class">org.hibernate.cache.EhCacheProvider</property>
+二级缓存的提供类 在hibernate4.0版本以后我们都是配置这个属性来指定二级缓存的提供类
+<property name="hibernate.cache.region.factory_class">org.hibernate.cache.ehcache.EhCacheRegionFactory</property>
+二级缓存配置文件的位置,默认的是在类路径下查找
+<property name="hibernate.cache.provider_configuration_file_resource_path">ehcache.xml</property>
+开启查询缓存，只有当 HQL 查询语句完全相同时，连参数设置都要相同，此时查询缓存才有效。查询缓存缓存的也仅仅是对象的id，如果要使用查询缓存，我们一定也要开启我们的二级缓存，这样就不会出现 N+1问题了
+<property name="hibernate.cache.use_query_cache">true</property> -->
+<!-- 控制迫切左外连接的深度，默认为2 -->
+<property name="max_fetch_depth">1</property>
+<!-- 连接池的实现类，如果使用的是内置的ConnectionProvider实现类，也可以不设置provider_class属性，Hibernate会根据配置文件推断出实现类的类型 -->
+<property name="connection.provider_class">org.hibernate.c3p0.internal.C3P0ConnectionProvider</property>
+<!-- 连接池中数据库连接的最大数目    -->
+<property name="c3p0.max_size">10</property>
+<!-- 连接池中数据库连接的最小数目    -->
+<property name="c3p0.min_size">5</property>
+<!-- 设定数据库连接的过期时间，以秒为单位，如果连接池中的某个数据库连接处于空闲状态的时间超过了timeout时间就会从数据库连接池清除    -->
+<property name="c3p0.timeout">600</property>
+<!-- 可以被缓存的PreparedStatement实例的最大数目，缓存适量的PreparedStatement实例，能够大大提高Hibernate的性能 -->
+<property name="c3p0.max_statements">100</property>
+<!-- 在使数据库连接自动生效前处于空闲状态的时间，以秒为单位   -->
+<property name="c3p0.idle_test_period">5</property>
+<!-- 当连接池里面的连接用完的时候，C3P0一下获取的新的连接数 -->
+<property name="c3p0.acquire_increment">2</property>
+<!-- 连接池每隔600秒自动检测数据库连接情况，如果断开则自动重连 -->
+<property name="idleConnectionTestPeriod">600</property>
+<!-- 每次从连接池取出一个连接时检测连接是否可用 -->
+<property name="testConnectionOnCheckout">true</property>
+<!-- proxool连接池的实现类 -->
+<!-- <property name="hibernate.connection.driver_class">  
+org.hibernate.connection.ProxoolConnectionProvider  
+</property> 
+连接池的别名,与配置文件中的别名相同
+<property name="proxool.pool_alias">ProxoolDatasource</property>
+proxool的配置文件 
+<property name="proxool.xml">proxool.xml</property> -->
+
+<mapping resource="com/bar3/domain/Kind.hbm.xml"/>
+<mapping resource="com/bar3/domain/Post.hbm.xml"/>
+<mapping resource="com/bar3/domain/Reply.hbm.xml"/>
+<mapping resource="com/bar3/domain/User.hbm.xml"/>
+<!-- 
+注册事件监听器，也可通过程度动态添加，注意必须放在Mapping元素的后面
+ -->
+<!-- <event type="load">
+<listener class="com.bar3.hibernateDemo.MyloadListener"/>
+</event> -->
+</session-factory>
+</hibernate-configuration>
+
+

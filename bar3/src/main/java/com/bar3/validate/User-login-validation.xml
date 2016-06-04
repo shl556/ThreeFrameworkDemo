@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE validators PUBLIC "-//OpenSymphony Group//XWork Validator 1.0.3//EN"
+"http://struts.apache.org/dtds/xwork-validator-1.0.3.dtd">
+
+<validators>
+	<field name="name">
+		<field-validator type="requiredstring" short-circuit="true">
+			<message>姓名不能为空</message>
+		</field-validator >
+		<field-validator type="stringlength">
+              <param name="minLength">5</param>
+              <param name="maxLength">10</param>
+              <message>姓名长度在${minLength}和${maxLength}之间</message>
+         </field-validator>
+	</field>
+	<field name="age">
+	     <field-validator type="requiredstring" short-circuit="true">
+	     <message>年龄不能为空</message>
+	     </field-validator>
+		 <field-validator type="conversion" short-circuit="true">
+	     <message>请输入有效的年龄</message>
+	     </field-validator>
+		<field-validator type="int" short-circuit="true">
+			<param name="min">10</param>
+			<param name="max">100</param>
+			<message>年龄为${min}到${max}之间</message>
+		</field-validator>
+	</field>
+	<field name="mobile">
+		<field-validator type="requiredstring" short-circuit="true">
+			<!-- 去掉空格 -->
+			<param name="trim">true</param>
+			<message>手机号不能为空</message>
+		</field-validator>
+		<!-- 正则表达式效验器，属性caseSensitive表示是否对大小写敏感，默认为true -->
+		<field-validator type="regex" short-circuit="true">
+			<param name="regex"><![CDATA[^1[358]\d{9}$]]></param>
+			<param name="regex"><![CDATA[([aAbBcCdD][123][eEfFgG][456])]]></param>
+			<message>手机号格式不正确</message>
+		</field-validator>
+	</field>
+</validators>

@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" 
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" 
+	xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports 
+	http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" 
+	name="static" 
+	pageWidth="595" 
+	pageHeight="842" 
+	columnWidth="535" 
+	leftMargin="20" 
+	rightMargin="20"
+	topMargin="20"
+	bottomMargin="20">
+	<background>
+		<band/>
+	</background>
+	<title>
+		<band height="79"/>
+	</title>
+	<pageHeader>
+		<band height="35"/>
+	</pageHeader>
+	<columnHeader>
+		<band height="61"/>
+	</columnHeader>
+	<detail>
+		<band height="135">
+			<staticText>
+				<reportElement x="112" y="13" width="343" height="34"/>
+				<textElement>
+					<font size="24" isBold="true"
+					pdfFontName="STSong-Light" pdfEncoding="UniGB-UCS2-H"
+					isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[疯狂Java体系图书：]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="112" y="47" width="343" height="88"/>
+				<textElement>
+					<font fontName="宋体" size="20" isBold="false"
+					pdfFontName="STSong-Light" pdfEncoding="UniGB-UCS2-H"
+					isPdfEmbedded="true"/>
+				</textElement>
+				<text><![CDATA[疯狂Java讲义
+轻量级Java EE企业应用实战
+疯狂Android讲义]]></text>
+			</staticText>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="45"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="54"/>
+	</pageFooter>
+	<summary>
+		<band height="42"/>
+	</summary>
+</jasperReport>

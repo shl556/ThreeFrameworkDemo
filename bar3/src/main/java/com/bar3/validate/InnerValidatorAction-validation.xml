@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE validators PUBLIC "-//OpenSymphony Group//XWork Validator 1.0.3//EN"
+"http://struts.apache.org/dtds/xwork-validator-1.0.3.dtd">
+
+<validators>
+	<!-- 使用内置的字段效验器有两种配置风格，分别是字段效验配置风格和非字段配置风格 字段效验配置风格： <validators> <field 
+		name="被校验的字段"> <field-validator type="校验器的类型"> 此处需要为不同校验器指定数量不等的校验规则 <param 
+		name="参数名">参数值</param> 校验失败后的提示信息，其中key指定国际化信息的key <message key="I18Nkey">校验失败后的提示信息</message> 
+		</field-validator> 如果校验字段满足多个规则，下面可以配置多个校验器 </field> 下一个要验证的字段 </validators> 
+		非字段效验风格： <valiators> <validator type="校验器类型名"> fieldName固定的 N必须大写 <param 
+		name="fieldName">需要被校验的字段</param> 下面的param元素可以有0个或者多个 <param name="参数名">参数值</param> 
+		<message key="I18NKey">提示信息</message> </validator> </validators> 两者的区别在于非字段校验：先指定校验器： 
+		由谁来校验，来校验谁。而字段校验器：先指定校验的属 性：我来校验谁，由谁来校验！ -->
+	<!-- 根据字段配置校验 -->
+	<!-- short-circuit="true" :表示短路，即下面的: 如果age 不是整数 就不会验证 age 的大小范围，这样我们的错误信息只有一个 
+		（类似： if... else if...） short-circuit="false" :表示不短路(默认): 即下面的: 如果 age 不是整数，还会继续判断age的大小范围 
+		这样页面就有两个错误信息 （类似if... if..） -->
+    <!-- 效验器执行顺序，1.非字段校验器比字段校验器先执行；2.从前往后执行； -->
+	<!-- 效验规则文件的搜索顺序，可以为ActionA中的login方法定义单独的效验规则，该规则文件的命名为A-login-vidation.xml。
+	加载在login方法上的效验规则是login方法对应的效验规则以及A的效验规则的综合。如果A有父类B，B同样有一个login方法及对应的效验文件，
+	则按照B-validation.xml,B-login-validation.xml,A-login-validation.xml,A-validation.xml的顺序依次搜索
+	，实际的效验规则是按照上述顺序搜索到的效验文件的效验规则的总和。 -->
+	<field name="age">
+		<!-- conversion效验器用于判断参数类型转换过程中是否出现异常， 如果出现异常则意味着效验失败 -->
+		<!-- 验证字段必须为整数 -->
+		<field-validator type="conversion" short-circuit="true">
+			<message>年龄必须为整数</message>
+		</field-validator>
+		<!-- int效验器验证字段是否在指定范围内,类似的用long，short,date效验器 -->
+		<!-- 验证字段必须的大小范围 -->
+		<field-validator type="int" short-circuit="true">
+			<param name="min">18</param>
+			<param name="max">100</param>
+			<message>年龄必须在${min}到${max}之间</message>
+		</field-validator>
+	</field>
+	<field name="name">
+		<!-- requiredstring效验器进行非空验证，参数trim默认为true表示在进行效验前会去掉空格.required效验器检查字段非空 -->
+		<field-validator type="requiredstring" short-circuit="true">
+			<message>姓名不能为空</message>
+		</field-validator>
+		<!-- stringlength效验器验证字符长度是否在指定范围内，同样有trim参数，默认为true -->
+		<field-validator type="stringlength" short-circuit="true">
+			<param name="maxLength">15</param>
+			<param name="minLength">6</param>
+			<message>姓名长度必须为${minLength}到${maxLength}之间!</message>
+		</field-validator>
+	</field>
+	<field name="sal">
+		<!-- 10<=sal<=100，double类型效验器 -->
+		<field-validator type="double">
+			<!-- 允许的最大值 -->
+			<param name="minInclusive">10</param>
+			<!-- 允许的最大值 -->
+			<param name="maxInclusive">100</param>
+			<message>${minInclusive}大于等于 薪水 小于等于 ${maxInclusive}</message>
+		</field-validator>
+		<!-- 10<sal<100 -->
+		<!-- <field-validator type="double"> 允许的最大值 <param name="minExclusive">10</param> 
+			允许的最大值 <param name="maxExclusive">100</param> <message>"${minInclusive}大于 
+			薪水 小于 ${maxInclusive}"</message> </field-validator> -->
+	</field>
+	<!-- email效验器 -->
+	<field name="email">
+		<field-validator type="email">
+			<message>邮件地址不正确</message>
+		</field-validator>
+	</field>
+	<!-- url效验器 -->
+	<field name="url">
+		<field-validator type="url">
+			<message>网址格式不正确</message>
+		</field-validator>
+	</field>
+	<!-- 表达式效验器，max2和min2都是字段名或者max2>2,只能采用非字段配置风格 -->
+	<validator type="expression">
+		<param name="expression">max2 > min2</param>
+		<message>max1要大于 min1</message>
+	</validator>
+	<!-- 字段表达式效验器，max2和min2都是字段名或者max2>2，两种配置风格都可使用 -->
+	<field name="max2">
+		<field-validator type="fieldexpression">
+			<param name="expression">max2 > min2</param>
+			<message>max2要大于 min2</message>
+		</field-validator>
+	</field>
+	<!-- 正则表达式效验器 -->
+	<field name="mycode">  
+        <field-validator type="regex">  
+            <param name="expression">  
+                <![CDATA[[0-9]\d{5}(?!\d)]]>  
+            </param>  
+            <message>不是有效的邮政编码！</message>  
+        </field-validator>  
+    </field>
+    <!-- 自定义效验器 -->
+    <!-- <field name="myname">
+		<field-validator type="myValidator">
+			<param name="name">admin</param>
+		    <message>姓名必须为${name}!</message>
+		</field-validator>
+	</field> -->
+	<!-- 非空验证器 -->
+	<!-- <field name="userName">
+	<field-validator type="required">
+		去掉空格
+		<param name="trim">true</param>
+		<message>姓名不能为空1</message> 
+	</field-validator> 
+    </field>-->
+</validators>

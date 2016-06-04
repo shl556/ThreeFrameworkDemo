@@ -1,0 +1,36 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping
+PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping >
+
+  <class name="mypack.Customer" table="CUSTOMERS" >
+    <id name="id" type="long" column="ID">
+      <generator class="increment"/>
+    </id>
+
+    <property name="name" column="NAME" type="string" />
+    <!-- 按外键映射 -->
+    <!-- many-to-one元素的unique属性默认为false，如果设为true则表明每个Customer对象都有唯一的homeAddress和comAddress对象
+    ，即间接实现一对一关联 --> 
+    <many-to-one name="homeAddress" 
+        class="mypack.Address"
+        column="HOME_ADDRESS_ID"
+        cascade="all" 
+        unique="true"
+    />
+
+    <many-to-one name="comAddress" 
+        class="mypack.Address"
+        column="COM_ADDRESS_ID"
+        cascade="all"
+        unique="true"
+    />
+    <!-- 按主键映射，即Address类与Customer类共享主键 -->
+     <one-to-one name="address" 
+        class="mypack.Address"
+        cascade="all" 
+     />  
+  </class>
+
+</hibernate-mapping>

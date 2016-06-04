@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping
+PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping >
+
+  <class name="mypack.Item" table="ITEMS" >
+    <id name="id" type="long" column="ID">
+      <generator class="increment"/>
+    </id>
+
+    <property name="name" column="NAME" type="string" />
+    <property name="basePrice" column="BASE_PRICE" type="double" />
+    <!-- 双向多对多映射 -->
+    <!-- 
+      在双向多对多映射关联中，必须把其中一端的inverse属性设为true。inverse属性为false的一端可以使用
+      set、idbag、list、map元素。而在inverse端为true的一端只能使用set和bag元素。idbag元素
+      与bag元素的相同点在于都允许在集合中存放重复对象，并且都不支持按索引位置排序，区别在于idbag元素要求在连接表
+      中必须定义代理主键，而bag元素没有这个要求，bag元素通常位于双向一对多或者多对多关联的inverse端。
+     -->
+    <set name="categories" table="CATEGORY_ITEM"
+        lazy="true"
+        inverse="true"
+        cascade="save-update">
+        <key column="ITEM_ID" />
+        <many-to-many class="mypack.Category" column="CATEGORY_ID" />
+    </set>
+ 
+  </class>
+</hibernate-mapping>

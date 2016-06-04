@@ -1,0 +1,396 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!-- 指定Struts 2配置文件的DTD信息 -->
+<!DOCTYPE struts PUBLIC
+	"-//Apache Software Foundation//DTD Struts Configuration 2.3//EN"
+	"http://struts.apache.org/dtds/struts-2.3.dtd">
+<!-- strust2用于处理用户请求的Action实例并不是用户实现的业务控制器，而是action代理，因为用户实现的业务控制器并没有与servlet 
+	API耦合无法处理 用户请求 -->
+<!-- 可以在web.xml,strust.properties,strust.xml文件中配置strust常量，web.xml在核心过滤器fileter中通过init-param标签配置， 
+	strust.properties通过名值对设置，strust.xml文件中通过constant元素配置。推荐使用最后一种。strust框架会按照strust.xml/strust.properties/ 
+	web.xml文件的顺序依次加载配置文件，如果在多个文件中配置同一常量，则后一个文件中的配置常量会覆盖前面的文件中配置常量。 -->
+<!-- strust的大部分核心组件并不是直接以硬编码的方式写在文件中而是以自己的Ioc（控制反转）容器来管理框架的核心组件，具体而言是通过bean配置来完成，定义bean时通常有两个作用： 
+	1.创建该bean的实例，将该实例作为strust2框架的核心组件使用。2.bean包含的静态方法需要注入一个值，将static属性设为true。 -->
+<!-- strust2使用包来管理Action和拦截器等，每个包就是多个Action和拦截器引用的集合。采用package元素配置，该元素包含以下属性： 
+	name，指定包的名字。extends指定继承的包。namespace定义包的命名空间。abstract指定该包是否是一个抽象包，抽象包不能定义anction。 
+	命名空间用来管理action，同一个命名空间下不能有同名的action，不同命名空间下可以有同名的action。如果某个包没有指定namespace属性时 
+	则采用默认的命名空间“”，指定命名空间后该包下所有action处理的url为命名空间+action名。默认命名空间里的action可以处理任何命名空间下的action 
+	具体而言处理请求时先到指定的命名空间中查找对应的action，如果找到则使用该action处理请求，如果没有找到则在默认命名空间中查找指定的action，找不到 
+	报错。 命名空间只有一个级别，如命名空间为/a/b/c,系统会现在a/b的命名空间下查找，找不到到默认命名空间查找，不会再a空间内查找。 -->
+<!-- 配置Struts 2配置文件的根元素，strust配置文件是从上到下处理的，父包应该在子包前定义，当应用中有多个strust.xml配置文件时，可以通过strust元素的order属性指定加载属性 -->
+<struts>
+	<!-- strust允许将一个配置文件分解成多个配置文件，从而提供配置文件的可读性。但strust2默认只加载类路径下的strust.xml一个文件。可以通过include元素引入其他配置文件 -->
+	<!--载入默认的struts配置、 -->
+	<include file="struts-default.xml" />
+	<!--指定web应用的默认编码集，相当于调用HttpServletRequest的setCharacterEncoding方法 -->
+	<constant name="struts.i18n.encoding" value="UTF-8"></constant>
+	<!--该属性指定需要Struts 2处理的请求后缀，该属性的默认值是action和空，即所有匹配*.action和没有后缀名的的请求都由Struts 
+		2处理 如果用户需要制定多个请求后缀，则多个后缀之间以英文逗号隔开 -->
+	<constant name="struts.action.extension" value="action"></constant>
+	<!--设置浏览器是否缓存静态内容，默认值为true，生产环境下使用，开发阶段最好关闭 -->
+	<constant name="struts.serve.static.browserCache" value="false"></constant>
+	<!--当struts的配置文件修改后，系统是否自动重新加载该文件，默认值为false，生产环境下使用，开发阶段最好打开 -->
+	<constant name="struts.configuration.xml.reload" value="true"></constant>
+	<!--开发模式下使用，可以打印出更详细的错误信息 -->
+	<constant name="struts.devMode" value="true" />
+	<!-- 动态方法调用 false为不允许 -->
+	<constant name="struts.enable.DynamicMethodInvocation" value="true" />
+	<!-- 默认的视图主题,标签不支持label ; theme属性包括xhtml,html,simple,ajax ,默认是xhtml,simple下不支持国际化key属性和css样式 -->
+	<!-- <constant name="struts.ui.theme" value="simple"></constant> -->
+	<!-- 支持页面使用静态方法和属性 -->
+	<constant name="struts.ognl.allowStaticMethodAccess" value="true"></constant>
+	<!-- 定义资源文件的位置和类型,resource是上级目录，messageResources是资源文件的basename -->
+	<constant name="struts.custom.i18n.resources" value="resource.messageResource" />
+	<!-- 接受一个新的请求时是否自动加载国际化资源文件 -->
+	<constant name="struts.i18n.reload" value="true" />
+	<!-- 指定文件上传中整个请求所允许上传的最大字节数,系统默认为2M，超过2m会报异常 -->
+	<constant name="struts.multipart.maxSize" value="41944304"></constant>
+	<!-- 指定文件上传的临时存储路径，默认为javax.servlet.context.tempdir -->
+	<constant name="struts.multipart.saveDir" value="d://temp"></constant>
+	<!-- 将文件上传机制改为Pell，除此以外要将pell对应的插件jar包加入到类路径中，系统默认为jakarta -->
+	<!-- <constant name="strust.multipart.parser" value="pell"></constant> -->
+	<!-- OGNL表达式计算失败或者为空时是否抛出运行时异常，抛出的异常为IoException,stream Closed -->
+	<!-- <constant name="struts.el.throwExceptionOnFailure" value="true"></constant> 
+		是否采用日志记录表达式中所有找不到的常量 <constant name="struts.ognl.logMissingProperties" value="true"></constant> -->
+	<!-- 
+	为了让Action访问Spring的业务逻辑组件，有两种策略，让Spring管理控制器和业务逻辑组件的实例化，并利用依赖注入为控制器注入业务逻辑组件。另一种是由strust框架负责action
+	的实例化，由spring管理逻辑组件并利用依赖注入（自动装配）将业务逻辑组件注入到action实例中，这种方式下，自动装配有两种方式name和type。spring插件的自动装配策略通过
+	strust.objectFactory.spring.autoWire常量指定，该常量可以接受如下几个值：name，根据属性名自动装配，spring插件会自动查找容器中所有的bean，找出其中id与
+	Action所需的业务逻辑组件同名的bean，将该bean实例注入到action实例中。type，根据属性类型自动装配，spring插件会查找容器中所有的bean，找出其中类型恰好与Action所需
+	业务逻辑组件相同的bean，将该bean注入到action实例中。auto，spring插件会自动检测需要使用哪种自动装配方式。constructor，与type类似，区别是constructor使用构造
+	器来构造注入所需的参数，而不是使用set注入方式
+	 -->
+	<constant name="struts.objectFactory.spring.autoWire"
+		value="type"/>
+	<!-- 使用Bean定义了一个UnknownHandler -->
+	<bean type="com.opensymphony.xwork2.UnknownHandler" name="yeekuHandler"
+		class="com.bar3.strustDemo.MyUnknownHandler" />
+	<!-- Struts 2的Action必须放在指定的包空间下定义 -->
+	<package name="struts2qs" extends="struts-default">
+		<interceptors>
+			<!-- 定义拦截器 <interceptor name="authority" class="com.bar3.Authority"></interceptor> 
+				<interceptor name="log" class="com.bar3.log"></interceptor> 定义拦截器栈，拦截器栈由多个拦截器组成 
+				<interceptor-stack name="authorityAndLog"> <interceptor-ref name="authority"></interceptor-ref> 
+				<interceptor-ref name="log"></interceptor-ref> </interceptor-stack> -->
+			<interceptor name="mysimple" class="com.bar3.strustDemo.SimpleInterceptor">
+				<!-- 为拦截器指定参数值 -->
+				<param name="name">简单拦截器</param>
+			</interceptor>
+			<!-- 配置方法过滤的拦截器 -->
+			<interceptor name="myfilter" class="com.bar3.strustDemo.MethodFilter">
+				<!-- 为方法过滤拦截器指定name属性值 -->
+				<param name="name">过滤方法的拦截器</param>
+			</interceptor>
+		</interceptors>
+		<!-- 定义包范围内的默认拦截器，如果该包下的action没有指定拦截器就会采用默认的拦截器，如果指定了则必须手动添加 对默认拦截器的应用 -->
+		<!-- <default-interceptor-ref name="authorityAndLog"></default-interceptor-ref> -->
+		<!-- 配置全局结果，全局结果对范围内所有的action都有效，action中的局部结果会覆盖全局结果 -->
+		<global-results>
+			<result name="sql">/WEB-INF/strustDemo/exception.jsp</result>
+			<result name="root">/WEB-INF/strustDemo/exception.jsp</result>
+		</global-results>
+		<!-- 此处定义所有的全局异常映射 -->
+		<global-exception-mappings>
+			<exception-mapping exception="java.sql.SQLException"
+				result="sql" />
+			<exception-mapping exception="java.lang.Exception"
+				result="root" />
+		</global-exception-mappings>
+		<!-- name属性为“”时可以匹配所有的请求处理，即为默认的请求处理类。默认的请求处理类可以通过default-class-ref元素定义，默认为ActionSupport -->
+		<!-- <default-class-ref class="com.opensymphony.xwork2.ActionSupport"></default-class-ref> -->
+		<!-- 定义login的Action，该Action的实现类为com.bar3.validate.LoginAction类，没有指定method的情况下默认调用execute方法，否则调用method属性指定的方法 
+			也可通过actionname!methodname如login!regist实现动态方法调用，即调用login对应的action类中的regist方法作为逻辑处理方法 -->
+		<!-- 可以在name、class、method属性和result元素中使用通配符 <action name="*Pro" class="com.bar3.strustDemo.ajax.{1}Action"> 
+			<action name="*_*" method="{2}" class="actions.{1}"></action> 第一个匹配的*对应{1}，第二个匹配的*对应{2} 
+			当请求可以与多个action匹配时，首先寻找与该请求绝对匹配的action，没有则按照先后顺序依次查找直到第一个匹配的action为止。 -->
+		<action name="login" class="com.bar3.validate.LoginAction">
+			<!-- 自定义的拦截器配置在struts.xml配置文件中后，还要手动引入defaultStack拦截器栈。否则defaultStack拦截器栈中所有拦截器的功能都无法实现。 -->
+			<interceptor-ref name="defaultStack"></interceptor-ref>
+			<!-- 增加拦截器，实现中英文切换 -->
+			<interceptor-ref name="i18n" />
+			<!-- <interceptor-ref name="mysimple" /> -->
+			<!-- <interceptor-ref name="myfilter"> <param name="name">改名后的过滤方法拦截器</param> 
+				指定execute方法不需要被拦截 <param name="excludeMethods">execute</param> </interceptor-ref> -->
+			<!-- 拦截器一般配置在result元素之后! -->
+			<interceptor-ref name="defaultStack" />
+			<!-- 下面的配置片段两次引用同一个拦截器,测试拦截器的执行顺序，跟servlet的filter是一样的 -->
+			<interceptor-ref name="mysimple">
+				<param name="name">第一个</param>
+			</interceptor-ref>
+			<interceptor-ref name="mysimple">
+				<param name="name">第二个</param>
+			</interceptor-ref>
+			<!-- 定义处理结果和视图资源之间映射关系，此时结果类型为默认的dispatcher，实现效果相当于转发，即根据action返回的字符串转发至相应的JSP页面，浏览器的URL并未改变 
+				result的type属性指定返回的结果类型，name是返回的字符串。type属性有以下10种： 1、chain。Action链式处理的结果类型。当一个Action处理完成之后希望让另一action进行下一步处理，此时需要两个action形成链式处理。 
+				2、dispatcher，用于与jsp整合的结果类型，就是转发至jsp资源 3、freemarker,用户与FreeMaker整合的结果类型 4、httpheader,用于控制特殊的HTTP行为的结果类型 
+				5、redirect，用于直接重定向到其他URL的结果类型，就是重定向至指定的资源，与dispatcher的区别就是转发与重定向的区别 6、redirectAction，用于直接重定向到其他Action的结果类型，与之对应的转发至action的结果类型为chain，同redict一样会丢失请求属性，请求参数和重定向前的处理结果。 
+				7、stream，用于向浏览器返回一个inputstream的结果类型 8、velocity，用于与Velocity整合的结果类型 9、xslt，用于与xml/XSLT整合的结果类型 
+				10、plainText，用于显示某个页面的原始代码的结果类型。用于显示指定视图资源的源代码，可通过name为charSet的param元素设置字符集解决显示时的中文乱码问题。 
+				可以在result元素的视图URL中使用通配符或者OGNL表达式，实现动态结果调用和传递参数。如 如<result>/WEB-INF/strustDemo/${target}.jsp</result>,target为对应action中的属性值。 -->
+			<result name="input">/WEB-INF/validate/loginForm.jsp</result>
+			<result name="error">/WEB-INF/validate/error.jsp</result>
+			<result name="success">/WEB-INF/validate/welcome.jsp</result>
+		</action>
+		<action name="doTest" class="com.bar3.validate.LoginAction"
+			method="doTest">
+			<!-- 自定义的拦截器配置在struts.xml配置文件中后，还要手动引入defaultStack拦截器栈。否则defaultStack拦截器栈中所有拦截器的功能都无法实现。 -->
+			<interceptor-ref name="defaultStack"></interceptor-ref>
+			<!-- 增加拦截器，实现中英文切换 -->
+			<interceptor-ref name="i18n" />
+			<!-- 定义处理结果和视图资源之间映射关系，实现效果相当于转发，即根据action返回的字符串转发至相应的JSP页面，浏览器的URL并未改变 -->
+			<result name="input">/WEB-INF/validate/loginForm.jsp</result>
+			<result name="error">/WEB-INF/validate/error.jsp</result>
+			<result name="success">/WEB-INF/validate/welcome.jsp</result>
+		</action>
+		<!-- <action name="getBooks" class="com.bar3.validate.GetBooksAction">
+			<result name="login">/WEB-INF/validate/loginForm.jsp</result>
+			<result name="success">/WEB-INF/validate/showBook.jsp</result>
+		</action> -->
+		<!-- ognl测试 -->
+		<action name="OgnlAction" class="com.bar3.OGNLDemo.OgnlAction">
+			<!-- <result name="success">/WEB-INF/ognl/ognlDemo.jsp</result> -->
+			<result name="success">/WEB-INF/ognl/ognlDemo2.jsp</result>
+		</action>
+		<!-- 表单标签测试 -->
+		<action name="goIndex" class="com.bar3.OGNLDemo.TagsAction"
+			method="goIndex">
+			<result name="success">/WEB-INF/ognl/index.jsp</result>
+			<interceptor-ref name="chainStack"></interceptor-ref>
+			<interceptor-ref name="basicStack"></interceptor-ref>
+		</action>
+		<action name="doSubmit" class="com.bar3.OGNLDemo.TagsAction"
+			method="doSubmit">
+			<result name="success" type="">/WEB-INF/ognl/suc.jsp</result>
+			<result name="input" type="chain">goIndex</result>
+		</action>
+		<!-- 效验框架测试 -->
+		<action name="validatorAction" class="com.bar3.validate.InnerValidatorAction">
+			<result>/WEB-INF/validate/welcome.jsp</result>
+			<result name="input">/WEB-INF/validate/login.jsp</result>
+		</action>
+
+		<action name="userAction" class="com.bar3.validate.UserAction">
+			<result>/WEB-INF/validate/welcome.jsp</result>
+			<result name="input">/WEB-INF/validate/login2.jsp</result>
+		</action>
+		<!-- action辅助类测试 -->
+		<action name="actionContext" class="com.bar3.strustDemo.ActionContextDemo">
+			<result name="input">/WEB-INF/strustDemo/loginForm.jsp</result>
+			<result name="success"> /WEB-INF/strustDemo/welcome.jsp</result>
+			<result name="error">/WEB-INF/strustDemo/welcome.jsp</result>
+		</action>
+		<action name="aware" class="com.bar3.strustDemo.ServletResponseAwareDemo">
+			<result name="input">/WEB-INF/strustDemo/loginForm.jsp</result>
+			<result name="success"> /WEB-INF/strustDemo/welcome.jsp</result>
+			<result name="error">/WEB-INF/strustDemo/welcome.jsp</result>
+		</action>
+		<action name="model" class="com.bar3.strustDemo.ModerDrivenDemo">
+			<result name="input">/WEB-INF/strustDemo/loginForm.jsp</result>
+			<result name="success"> /WEB-INF/strustDemo/welcome.jsp</result>
+			<result name="error">/WEB-INF/strustDemo/welcome.jsp</result>
+		</action>
+		<action name="exception" class="com.bar3.strustDemo.ExceptionDemo">
+			<exception-mapping exception="org.crazyit.struts2.exception.MyException"
+				result="my" />
+			<result name="my">/WEB-INF/strustDemo/exception.jsp</result>
+			<result name="input">/WEB-INF/strustDemo/loginForm.jsp</result>
+			<result name="success"> /WEB-INF/strustDemo/welcome.jsp</result>
+			<result name="error">/WEB-INF/strustDemo/welcome.jsp</result>
+		</action>
+		<!-- 类型转换测试 -->
+		<!-- 使用strust内建的类型转换机制时，如果转换失败会返回input，因此必须配置input的视图资源 -->
+		<action name="regist" class="com.bar3.strustDemo.convert.RegistAction">
+			<!-- 下面定义了一个结果映射 -->
+			<result>/WEB-INF/convert/welcome.jsp</result>
+			<result name="input">/WEB-INF/convert/registForm.jsp</result>
+		</action>
+		<action name="convert" class="com.bar3.strustDemo.convert.LoginAction">
+			<!-- 下面定义了一个结果映射 -->
+			<result>/WEB-INF/convert/welcome.jsp</result>
+			<result name="input">/WEB-INF/convert/loginForm.jsp</result>
+		</action>
+		<!-- 上传文件测试 ,注意必须在应用根目录下建一个upload的文件夹 -->
+		<action name="uploadPro" class="com.bar3.strustDemo.upload.UploadAction2">
+			<!-- 配置fileUpload的拦截器 -->
+			<interceptor-ref name="fileUpload">
+				<!-- 配置允许上传的文件类型 -->
+				<param name="allowedTypes">image/bmp,
+					image/png,image/gif,image/jpeg,image/pjpeg</param>
+				<!-- 配置允许上传的文件大小,单位为字节B，2097152为2M -->
+				<param name="maximumSize">2097152</param>
+			</interceptor-ref>
+			<!-- 配置系统默认的拦截器 -->
+			<interceptor-ref name="defaultStack" />
+			<!-- 设置允许上传的文件类型 -->
+			<!--<param name="allowTypes">image/bmp,image/png ,image/gif,image/jpeg,image/pjpeg</param> -->
+			<!-- 动态设置Action的属性值 -->
+			<param name="savePath">/upload</param>
+			<!-- 配置上传成功的视图页面 -->
+			<result>/WEB-INF/uploadDemo/succ.jsp</result>
+			<result name="input">/WEB-INF/uploadDemo/uploadForm.jsp</result>
+		</action>
+		<!-- 配置处理文件下载的Action -->
+		<action name="download" class="com.bar3.strustDemo.upload.AuthorDownloadAction">
+			<!-- 配置结果类型为stream的结果，各param参数由strust作为消息头返回给客户端 -->
+			<result name="success" type="stream">
+				<!-- 指定下载文件的文件类型 -->
+				<param name="ajaxType">${ajaxType}</param>
+				<!-- 指定由getTargetFile()方法返回被下载文件的InputStream -->
+				<param name="inputName">targetFile</param>
+				<!-- 指定下载文件的文件名 -->
+				<param name="ajaxDisposition">filename="${downFileName}"</param>
+				<!-- 指定下载文件的缓冲大小 -->
+				<param name="bufferSize">4096</param>
+			</result>
+		</action>
+		<!-- get请求参数传递测试 -->
+		<action name="url" class="com.bar3.strustDemo.upload.URLparamTest">
+			<result>/WEB-INF/uploadDemo/welcome.jsp</result>
+		</action>
+		<!-- action标签测试 -->
+		<action name="tag1" class="com.bar3.strustDemo.tags.TagAction">
+			<result name="done">/WEB-INF/tag/succ.jsp</result>
+		</action>
+		<action name="tag2" class="com.bar3.strustDemo.tags.TagAction"
+			method="login">
+			<result name="done">/WEB-INF/tag/loginSucc.jsp</result>
+		</action>
+		<!-- 测试用s:token标签防止表单重复提交 -->
+		<action name="pro" class="com.bar3.strustDemo.tags.ProAction">
+			<!-- 使用防刷新的token拦截器 -->
+			<interceptor-ref name="token" />
+			<interceptor-ref name="defaultStack" />
+			<!-- 定义重复提交转向的视图，该逻辑视图名必须是invalid.token -->
+			<result name="invalid.token">/WEB-INF/tag/refresh.jsp</result>
+			<!-- 如果处理结果返回success，对应/show.jsp视图资源 -->
+			<result name="success">/WEB-INF/tag/show.jsp</result>
+		</action>
+		<!-- 用stream结果类型实现简单的ajax -->
+		<action name="ajax" class="com.bar3.strustDemo.ajax.GuessNumberAction">
+			<!-- 直接使用二进制流作为响应 -->
+			<result type="stream">
+				<param name="ajaxType">text/html</param>
+				<!-- 使用getInputStream()返回值作为响应 -->
+				<param name="inputName">inputStream</param>
+			</result>
+		</action>
+		<!-- Dojo异步提交表单测试 -->
+		<action name="ajaxTest" class="com.bar3.strustDemo.ajax.AjaxTestAction">
+			<result>/WEB-INF/ajax/ajaxResult.jsp</result>
+		</action>
+		<action name="test2">
+			<result>/WEB-INF/ajax/testjs2.jsp</result>
+		</action>
+		<action name="random" class="com.bar3.strustDemo.ajax.RandomAction">
+			<result>/WEB-INF/ajax/randomStr.jsp</result>
+		</action>
+		<action name="books">
+			<result>/WEB-INF/ajax/data_zh_CN</result>
+		</action>
+		<!-- <action name="getBooks" class="com.bar3.strustDemo.ajax.GetBooksAction">
+			<result>/WEB-INF/ajax/books.jsp</result>
+		</action> -->
+		<action name="showPerson" class="com.bar3.strustDemo.ajax.ShowPersonAction">
+			<result>/WEB-INF/ajax/showPerson.jsp</result>
+		</action>
+		<action name="getChild" class="com.bar3.strustDemo.ajax.GetChildNode">
+			<result>/WEB-INF/ajax/bookNode.jsp</result>
+		</action>
+		<!-- freemarker测试 -->
+		<!-- <action name="loginPro" class="com.bar3.strustDemo.freemarker.LoginAction">
+			通过指定type="freemarker"来指定使用FreeMarker视图
+			<result name="error" type="freemarker">
+				/WEB-INF/ftl/error.ftl
+			</result>
+			<result type="freemarker">
+				/WEB-INF/ftl/welcome.ftl
+			</result>
+		</action> -->
+		<action name="getBooks" class="com.bar3.strustDemo.freemarker.GetBooksAction">
+			<result name="login" type="freemarker">/WEB-INF/ftl/login.ftl</result>
+			<result type="freemarker">/WEB-INF/ftl/showBook.ftl</result>
+		</action>
+		<!-- 配置匹配所有请求的Action -->
+		<!-- <action name="*">
+			<result type="freemarker">/WEB-INF/ftl/{1}.ftl</result>
+		</action> -->
+		<!-- 为了使JSP页面是完全由action所控制的，防止用户请求直接发送到JSP页面，将所有的JSP页面放在WEB-INFO目录下。 因为用户无法直接访问WEB-INFO目录下的内容。直接跳转到*所代表的页面页面，比如用户访问abc 
+			Action，此时*代表abc，Struts2将会跳转到abc.jsp页面 -->
+		<!-- <action name="*"> <result>/WEB-INF/validate/{1}.jsp</result> </action> -->
+		<!-- <action name="*"> <result>/WEB-INF/uploadDemo/{1}.jsp</result> </action> -->
+		<!-- <action name="*"> <result>/WEB-INF/tag/{1}.jsp</result> </action> -->
+		<!-- <action name="*">
+			<result>/WEB-INF/ajax/{1}.jsp</result>
+		</action> -->
+		<!-- <action name="*"> <result>/WEB-INF/convert/{1}.jsp</result> </action> -->
+		<!-- <action name="*"> <result>/sitemesh/{1}.jsp</result> </action> -->
+	    <!-- 测试spring整合 -->
+	    <action name="loginPro"
+			class="com.bar3.strustDemo.spring.LoginAction">
+			<result name="error">/WEB-INF/spring/error.jsp</result>
+			<result>/WEB-INF/spring/welcome.jsp</result>
+		</action>
+		<action name="*">
+			<result>/WEB-INF/spring/{1}.jsp</result>
+		</action>
+	</package>
+	<!-- 使用JSON插件，让Struts 2的包继承json-default -->
+	<package name="lee" extends="json-default">
+		<!-- json插件测试。一旦为action指定了一个类型为json的Result则该Result无须映射到任何视图资源，因为json插件会负责将action 
+			里的状态信息序列化成json格式的字符串并将该字符串返回给客户端页面 -->
+		<action name="jsonExample" class="com.bar3.strustDemo.ajax.JSONExample">
+			<result type="json">
+				<!-- 指定浏览器不缓存服务器响应 -->
+				<param name="noCache">true</param>
+				<!-- 指定不包括Action中值为null的属性 -->
+				<param name="excludeNullProperties">true</param>
+			</result>
+		</action>
+		<!-- <action name="*">
+			<result>/WEB-INF/ajax/{1}.jsp</result>
+		</action> -->
+	</package>
+	<!-- jasperReport测试 -->
+	<package name="report" extends="jasperreports-default">
+	    <action name="export" class="com.bar3.strustDemo.jasperReport.JasperAction">
+			<result name="success" type="jasper">
+				<!-- 表示jasper文件的位置 -->
+				<param name="location">jasper/voList.jasper</param>
+				<!-- 表示生成的报表文件的格式，如果不指定默认为PDF -->
+				<!-- <param name="format">HTML</param> -->
+			     <!-- 导出为excel表格 -->
+			     <param name="format">XLS</param>
+				<!-- <param name="format">PDF</param> -->
+				<!-- 集合属性名，JasperReports会自动迭代输出该集合中的VO对象 -->
+				<param name="dataSource">bookList</param>
+			</result>
+		</action>
+	</package>
+	<!--  jasperReport生成的HTML文件中会引用http://localhost:8080/bar3/images/px的空白图片来填充空白 -->
+	<package name="yeeku" extends="struts-default"
+		namespace="/images">  
+		<action name="px">
+			<result>px</result>
+		</action>
+	</package>
+	<!-- 测试jfreeChart -->
+	<package name="jfreereport" extends="struts-default" namespace="/chart">
+	   <action name="*">
+	   <!-- 注意必须斜杠，否则会收到原命名空间影响 -->
+	   <result >/jasper/{1}.jsp</result>
+	   </action>
+	</package>
+	<!-- 同一个strust文件中不能有两个相同的包名，否则后一个包中的action不会被加载 -->
+	<package name="jree" extends="jfreechart-default" namespace="/jfree">
+		<action name="bookChart" class="com.bar3.strustDemo.jasperReport.ChartAction">
+			<result type="chart">
+			    <!-- 设置生成图片的宽高 -->
+				<param name="width">800</param>
+				<param name="height">600</param> 
+			</result>
+		</action>
+	</package>
+	<!-- 定义本系统的UnknownHandler栈 -->
+	<unknown-handler-stack>
+		<unknown-handler-ref name="yeekuHandler" />
+	</unknown-handler-stack>
+</struts>

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 配置Web应用配置文件的根元素，并指定配置文件的Schema信息 -->
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://java.sun.com/xml/ns/javaee" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_3_0.xsd" version="3.0">
+  <servlet>
+    <servlet-name>logInit</servlet-name>
+    <servlet-class>com.bar3.util.ResourcesInit</servlet-class>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+  <servlet>
+    <servlet-name>DisplayChart</servlet-name>
+    <servlet-class>org.jfree.chart.servlet.DisplayChart</servlet-class>
+  </servlet>
+  <servlet-mapping>
+    <servlet-name>DisplayChart</servlet-name>
+    <url-pattern>/displayChart.do</url-pattern>
+  </servlet-mapping>
+  <servlet>
+    <servlet-name>JspSupportServlet</servlet-name>
+    <servlet-class> org.apache.struts2.views.JspSupportServlet</servlet-class>
+    <load-on-startup>2</load-on-startup>
+  </servlet>
+  <filter>
+    <filter-name>struts-prepare</filter-name>
+    <filter-class>org.apache.struts2.dispatcher.ng.filter.StrutsPrepareFilter</filter-class>
+    <init-param>
+      <param-name>config</param-name>
+      <param-value>struts-default.xml,struts-plugin.xml,config/struts.xml</param-value>
+    </init-param>
+    <init-param>
+      <param-name>loggerFactory</param-name>
+      <param-value>com.opensymphony.xwork2.util.logging.commons.CommonsLoggerFactory</param-value>
+    </init-param>
+  </filter>
+  <filter>
+    <filter-name>struts-execute</filter-name>
+    <filter-class>org.apache.struts2.dispatcher.ng.filter.StrutsExecuteFilter</filter-class>
+  </filter>
+  <filter-mapping>
+    <filter-name>struts-prepare</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+  <filter-mapping>
+    <filter-name>struts-execute</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+  <listener>
+    <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+  </listener>
+</web-app>

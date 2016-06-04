@@ -1,0 +1,92 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<!DOCTYPE hibernate-configuration
+ PUBLIC "-//Hibernate/Hibernate Configuration DTD//EN"
+ "http://hibernate.sourceforge.net/hibernate-configuration-3.0.dtd">
+
+<hibernate-configuration>
+<session-factory >
+
+<property name="dialect">
+org.hibernate.dialect.Oracle10gDialect
+</property>
+<property name="connection.driver_class">
+oracle.jdbc.driver.OracleDriver
+</property>
+<property name="connection.url">
+jdbc:oracle:thin:@localhost:1521:SUN
+</property>
+<property name="connection.username">
+book
+</property>
+<property name="connection.password">
+shl556161
+</property>
+<!-- 设置session与当前线程绑定 -->
+<property name="current_session_context_class">thread</property>
+<!-- 设置数据库的隔离级别为Read Commited -->
+<property name="connection.isolation">2</property>
+<!-- 第一次加载hibernate时根据model类会自动建立起表的结构（前提是先建立好数据库），以后加载hibernate时根据 model类自动更新表结构，
+即使表结构改变了但表中的行仍然存在不会删除以前的行。要注意的是当部署到服务器后，表结构是不会被马上建立起来的，是要等 应用第一次运行起来后才会。 -->
+<!-- <property name="hbm2ddl.auto">update</property> -->
+<!--connection.useUnicode 连接数据库时是否使用Unicode编码--> 
+<property name="connection.useUnicode">true </property>
+<!--connection.characterEncoding连接数据库时数据的传输字符集编码方式，最好设置为gbk，用gb2312有的字符不全--> 
+<property name="connection.characterEncoding">UTF-8</property>   
+<!-- 显示合成的sql -->
+<property name="show_sql">true</property>
+<!-- 显示sql时进行格式化 -->
+<property name="format_sql">true</property>
+<!-- 允许在SQL日志中加入适当的注解 -->
+<property name="use_sql_comments">true</property>
+<!-- 
+控制session的delete()方法的行为，若为true则执行完delete方法后对象由持久化状态转化为
+临时状态，OID为null。默认为false，执行完delete()方法后该对象不可用
+ -->
+<property name="use_identifier_rollback">false</property>
+<!-- 
+设置底层jdbc单次批量处理的数目，合理的取值时10-50，默认为15。注意如果对象采用identify标识符
+生成器时，则Hibernate无法再jdbc层进行批量插入操作。同时批量处理时建议关闭二级缓存。
+ -->
+<property name="jdbc.batch_size">20</property>
+<!--jdbc.fetch_size是指Hibernate每次从数据库中取出并放到JDBC的Statement中的记录条数。Fetch Size设的越大，读数据库的次数越少，速度越快，
+　　　　　　    Fetch Size越小，读数据库的次数越多，速度越慢--> 
+<property name="jdbc.fetch_size">50 </property> 
+<!-- 控制迫切左外连接的深度，默认为2 -->
+<property name="max_fetch_depth">1</property>
+<!-- 连接池的实现类，如果使用的是内置的ConnectionProvider实现类，也可以不设置provider_class属性，Hibernate会根据配置文件推断出实现类的类型 -->
+<property name="connection.provider_class">org.hibernate.c3p0.internal.C3P0ConnectionProvider</property>
+<!-- 连接池中数据库连接的最大数目    -->
+<property name="c3p0.max_size">5</property>
+<!-- 连接池中数据库连接的最小数目    -->
+<property name="c3p0.min_size">2</property>
+<!-- 设定数据库连接的过期时间，以秒为单位，如果连接池中的某个数据库连接处于空闲状态的时间超过了timeout时间就会从数据库连接池清除    -->
+<property name="c3p0.timeout">600</property>
+<!-- 可以被缓存的PreparedStatement实例的最大数目，缓存适量的PreparedStatement实例，能够大大提高Hibernate的性能 -->
+<property name="c3p0.max_statements">100</property>
+<!-- 在使数据库连接自动生效前处于空闲状态的时间，以秒为单位   -->
+<property name="c3p0.idle_test_period">5</property>
+<!-- 当连接池里面的连接用完的时候，C3P0一下获取的新的连接数 -->
+<property name="c3p0.acquire_increment">2</property>
+<!-- 连接池每隔600秒自动检测数据库连接情况，如果断开则自动重连 -->
+<property name="idleConnectionTestPeriod">600</property>
+<!-- 每次从连接池取出一个连接时检测连接是否可用 -->
+<property name="testConnectionOnCheckout">true</property>
+
+<!-- <mapping resource="com/house/domain/User.hbm.xml"/>
+<mapping resource="com/house/domain/Street.hbm.xml"/>
+<mapping resource="com/house/domain/HouseType.hbm.xml"/>
+<mapping resource="com/house/domain/HousePicture.hbm.xml"/>
+<mapping resource="com/house/domain/House.hbm.xml"/>
+<mapping resource="com/house/domain/District.hbm.xml"/> -->
+<!-- <mapping class="com.bar3.domain.annonation.Kind"/>
+<mapping class="com.bar3.domain.annonation.Post"/>
+<mapping class="com.bar3.domain.annonation.Reply"/>
+<mapping class="com.bar3.domain.annonation.User"/> -->
+<mapping class="com.bar3.domain.annonation.Flights"/>
+<mapping class="com.bar3.domain.annonation.Tickets"/>
+<mapping class="com.bar3.domain.annonation.Airport"/>
+
+</session-factory>
+</hibernate-configuration>
+
+

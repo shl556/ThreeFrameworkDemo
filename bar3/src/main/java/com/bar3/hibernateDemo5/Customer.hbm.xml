@@ -1,0 +1,62 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping
+PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping >
+
+  <class name="com.bar3.hibernateDemo5.Customer" table="CUSTOMERS" >
+    <id name="id" type="long" column="ID">
+      <generator class="increment"/>
+    </id>
+
+    <property name="name" type="string" >
+        <column name="NAME" length="15" />
+    </property>
+
+   <property name="age" type="int" >
+        <column name="AGE" />
+   </property>
+  <!-- 
+   Hibernate对集合中元素支持两种排序方式，利用order by子句排序（数据库排序）和利用java集合的排序功能排序（内存排序），在映射文件中，Hibernate用sort属性类设置内存排序
+   ，用order-by属性来设置数据库排序。set/map元素支持内存排序和数据库排序，list元素不支持任何排序方式，而idbag仅支持数据库排序。
+   -->
+   <!-- 对应的images属性为Set集合，初始化时为TreeSet集合，key元素表示参照的外键，element表示images属性中的其他元素，因为images属性为值类型故没有单独的image映射文件 -->
+   <!-- <set   name="images"   table="IMAGES"    lazy="true" order-by="FILENAME asc">
+        <key column="CUSTOMER_ID" />
+        <element column="FILENAME" type="string"  not-null="true"/>
+   </set> 
+   对应的images属性为List集合，初始化时为ArrayList集合，映射集合类型为Bag，Bag集合中的对象不按特定方式排序，但是允许有重复对象，Hibernate不会保证Bag集合中的元素保持固定的顺序，集合中的顺序与
+   加入的顺序不一定相同。collection-id为代理主键  
+   <idbag   name="images"   table="IMAGES"    lazy="true" order-by="lower(FILENAME) desc">
+        <collection-id type="long" column="ID">
+           <generator class="increment"/>
+        </collection-id>
+        <key column="CUSTOMER_ID" />
+        <element column="FILENAME" type="string"  not-null="true"/>
+   </idbag>  
+   对应的images属性为List集合，初始化时为ArrayList集合，映射集合类型为List。list-index表示集合中元素位置的索引
+   <list   name="images"   table="IMAGES"    lazy="true">
+        <key column="CUSTOMER_ID" />
+        <list-index column="POSITION" />
+        <element column="FILENAME" type="string"  not-null="true"/>
+   </list> -->
+   <!--对应的images属性为Map集合,初始化时为TreeMap集合，map-key元素指定K值，element元素指定V值。  -->
+   <!-- sort属性排序，unsorted为默认值表示不排序，natural表示对K值按照自然顺序排序，也可采用客户化的排序，即实现了Comparator接口的类 -->
+   <map   name="images"   table="IMAGES"    lazy="true" sort="natural">
+        <key column="CUSTOMER_ID" />
+        <map-key column="IMAGE_NAME" type="string"/>
+        <element column="FILENAME" type="string"  not-null="true"/>
+   </map> 
+   <!-- 映射组件类型集合，Image类作为一个组件类 -->
+   <!-- <set   name="images"   table="IMAGES"    lazy="true"  order-by="IMAGE_NAME asc">
+        <key column="CUSTOMER_ID" />
+       <composite-element  class="mypack.Image">
+         <parent name="customer" />
+         <property name="name" column="IMAGE_NAME" not-null="true" />
+         <property name="filename" column="FILENAME" not-null="true" />
+         <property name="sizeX" column="SIZEX" not-null="true" />
+         <property name="sizeY" column="SIZEY" not-null="true" />
+       </composite-element>
+ </set>    -->
+  </class>
+</hibernate-mapping>

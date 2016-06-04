@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping
+PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping >
+
+  <class name="com.bar3.hibernateDemo.Customer" table="CUSTOMERS" >
+    <id name="id" type="long" column="ID">
+      <generator class="increment"/>
+    </id>
+
+    <property name="name" type="string" >
+        <column name="NAME" length="15" />
+    </property>
+    <!-- 
+    component元素表明homeAddress是customer对象的一个组件
+    Hibernate把持久化类分为两种，值类型和实体类型。值类型和实体类型最重要的区别是前者没有OID不能被单独持久化，它的
+            生命周期依赖于所属的持久化类的对象的生命周期，组件类型就是一种值类型。
+     -->
+    <component name="homeAddress" class="com.bar3.hibernateDemo.Address">
+            <parent name="customer" />
+            <property name="province" type="string">
+            <column name="HOME_PROVINCE" length="50"></column>
+            </property>
+            <property name="city" type="string">
+            <column name="HOME_CITY" length="50"></column>
+            </property>
+            <property name="street" type="string">
+            <column name="HOME_STREET" length="50"></column>
+            </property>
+            <property name="zipCode" type="string">
+            <column name="HOME_ZIPCODE" length="50"></column>
+            </property>
+    </component>
+    <component name="comAddress" class="com.bar3.hibernateDemo.Address">
+            <parent name="customer" />
+            <property name="province" type="string">
+            <column name="COM_PROVINCE" length="50"></column>
+            </property>
+            <property name="city" type="string">
+            <column name="COM_CITY" length="50"></column>
+            </property>
+            <property name="street" type="string">
+            <column name="COM_STREET" length="50"></column>
+            </property>
+            <property name="zipCode" type="string">
+            <column name="COM_ZIPCODE" length="50"></column>
+            </property>
+    </component>    
+  </class>
+
+</hibernate-mapping>

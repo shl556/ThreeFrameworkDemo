@@ -1,0 +1,121 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+<!-- 
+Session缓存的三大作用：一、减少访问数据库的频率，hibernate加载一个对象时会先在缓存中检索是否存在
+该对象，如果有则直接返回该对象的引用，如果没有则到数据库中查找该对象相关信息，并将该对象放入缓存中。二、当
+缓存中的持久化对象之间存在循环关联关系时，Session保证不出现访问对象图的死循环以及由死循环引起的jvm堆栈
+溢出。三、保证数据库中的相关记录与缓存中的相应对象保持同步。当Session清理缓存时会自动进行脏检查，如果发现
+session缓存中的对象与数据库中相应记录不一致就会根据对象的最新属性去同步更新数据库。当session缓存中的对象的
+属性发生变化时，session并不会立即清理缓存并执行相关的SQL语句而是在特定的时间点才清理缓存，以便减少数据库访问
+次数，提高系统的数据访问性能。
+ -->
+<!-- 
+session在清理缓存时会按照以下顺序执行sql语句：1.按照应用程序调用session.save()方法的先后顺序执行所有对
+实体进行插入的insert语句。2.执行所有对实体进行更新的update语句。3.执行所有对集合进行删除的delete语句。4.
+执行所有对集合元素进行删除、更新或者插入的SQL语句。4.执行所有对集合进行插入的insert语句。5.按照应用程序调用
+session.delete()方法的先后顺序执行对所有实体进行删除的delete语句
+ -->
+ <!-- 
+ 默认情况下，session会在以下时间点清理缓存：1.当应用程序调用transaction的commit()方法的时候，commit()
+ 方法会先清理缓存然后再向数据库提交事务。2.当应用程序执行一些查询操作时，如果缓存中的持久化对象的属性发生改变就会先清理
+ 缓存使session缓存的数据与数据库达到同步，从而保证相关结果返回的是正确的数据。3.当应用程序显式调用session的flush()方法
+session进行清理缓存的例外情况是如果对象调用native生成器来生成OID那么当调用session的save()方法保存该对象时会立即
+执行向数据库插入该实体的insert语句。
+如果不希望session在以上默认的时间点清理事务，可以通过设置session的setFlushMode()方法来显式设定清理缓存的时间点，
+FLushMode类定义了3种不同的清理模式，分别是AUTO/COMMIT/NEVER.
+  -->
+ <!-- 
+ 持久化层的状态可处于以下4个状态之一：临时状态，刚用new语句创建，还没有被持久化，并且不处于session的缓存中。持久化状态，已经被
+ 持久化，并且加入到session的缓存中。删除状态，不再处于session的缓存中，并且计划将其从数据库中删除。游离状态，已经被持久化但不再
+ 处于session的缓存中。
+hibernate保证在同一个session实例的缓存中，数据库表中的每条记录只对应唯一一个持久化对象。多个session实例的缓存中的持久化对象
+可以对应同一条数据库记录。但是这样会导致重复执行SQL语句容易出现并发问题。因此应该避免同一个Java对象被多个session实例关联。
+  -->
+<!-- 
+<hibernate-mapping>元素的schema属性可设置该映射文件生成的ddl所属的数据库，主要针对Mysql等
+package属性可用于设置class元素所属的包名
+ -->
+<hibernate-mapping >
+<!-- 
+class元素的dynamic-insert和dynami-update属性默认值为false，即插入更新时会插入更新所有的
+字段值，如果为true会根据实际情况插入需要插入或者更新需要更新的字段
+ -->
+<class name="com.bar3.domain.Kind">
+<!-- id元素必须在property元素的前面，否则报异常-->
+<id name="Id" type="long">
+<meta attribute="use-in-tostring">true</meta>
+<meta attribute="scope-set">private</meta>
+<!-- generator表示对象标识符生成器，native表示根据底层数据库对自动标识符的支持能力自动选择合适生成器 -->
+<generator class="native"></generator>
+</id>
+<!-- 
+   并发问题分为几类：1.第一类丢失更新：撤销一个事务时，把其他事务已提交的更新数据覆盖。2.脏读：一个事务读到另一个事务
+   未提交的数据。3.虚读：一个事务读到另一事务已经提交的新插入数据。4.不可重复读：一个事务读到另一个事务已提交的更新数据
+ 5.第二类丢失更新：这是不可重复读中的特例，一个事务覆盖了另一事务已提交的更新数据。
+ 为了在事务的隔离性和并发性之间做出合理的权衡，数据库系统提供了4种事务隔离级别供用户选择，Serializable(串行化)、
+ Repeated Read（可重复读）、Read Commited(读已提交的数据)、Read Uncommited（读为提交的数据）。对
+于多数应用程序可以优先考虑把数据库系统的隔离级别设为Read Commited,它能够避免脏读，而且有较好的并发性能。可以由
+应用程序采用悲观锁或者乐观锁来控制可能的不可重复读、虚读和第二类丢失更新等并发问题。
+ -->
+ <!-- 
+ 悲观锁指在应用程序中显式的为数据资源加锁，悲观锁假定当前事务操纵数据资源时，肯定还会有其他事务同时访问该数据资源，为了避免
+ 当前事务的操作收到干扰，先锁定资源。悲观锁会影响并发性能应该谨慎使用。
+乐观锁假定在当前事务操纵数据资源时，不会有其他事务同时访问该数据资源，因此完全依靠数据库的隔离级别来自动管理所的工作。
+悲观锁有两种实现方式，一是显式指定采用数据库系统的独占锁来锁定数据资源。二是在数据库表中增加一个表明记录状态的LOCK字段
+，当它取值为Y时表示该记录已经被某个事务锁定，如果为N表明该记录处于空闲状态。
+
+利用Hibernate提供的版本控制功能来实现乐观锁。对象-关系映射文件中的version元素和timestamp元素都具有版本控制功能。
+version元素利用一个递增的整数来跟踪数据库表中记录的版本，而timestamp元素利用时间戳来跟踪数据库表中记录的版本，在实体类中
+和数据库表中同时添加上述属性。应用程序无需为version属性或者timestamp属性显式赋值，在持久化过程中Hibernate会自动赋值。
+当出现可能的第二类丢失更新时就会抛出StaleObjectStateException异常，应用程序应该捕获该异常并自动撤销事务。version元素
+优于timestamp元素。
+
+只有当Hibernate通过update语句更新一个对象时才会修改它的version属性，同时版本控制不具有级联特性。
+  -->
+<!-- 版本控制实现乐观锁 -->
+<version name="version" type="integer"/>
+<!-- composite-id用于映射复合主键，除了以下方式外还可以自定义一个复合主键类 -->
+<!-- <composite-id name="customerId" class="mypack.CustomerId" >
+      <key-property name="name" column="NAME"  type= "string" />
+    <key-many-to-one name="company" 
+class="mypack.Company" 
+column="COMPANY_ID" />
+    </composite-id> -->
+<!-- 
+property元素的access属性表示Hibernate访问实体类属性的方式，默认为property,即通过get或者set方法访问。也可设置为field即通过反射直接
+访问属性值
+Hibernate通过调用property元素中的name属性值对应的get或者set方法访问实体类的属性，因此name属性值在实体类中即使不存在但对应的
+set或者get方法存在则一样可以在HQL查询语句中访问该属性
+ -->
+<property name="kindName" type="string" length="30" not-null="true" unique="true">
+<meta attribute="use-in-tostring">true</meta>
+</property>
+<property name="parentKindId" type="long" not-null="true">
+<meta attribute="use-in-tostring">true</meta>
+</property>
+<!-- 
+formula表示实体类的派生属性，该属性没有对应的字段，该属性可以通过sql查询或者一般的计算表达式产生
+ -->
+<property name="postSum" type="integer" formula="(select count(*) from Post a where a.kindId=id)"></property>
+<!-- 
+建立一对多映射，即生成的Kind实体类中有一个属性为Set<Post> posts的属性，即该版块关联的所有的主题的set集合
+invers属性默认为false即建立双向一对多映射时Hibernate会根据“一”和“多”端的变化分别生成对应的sql更新语句造成
+可能的SQL重复执行的问题。如果设置为true则表明按照“多”端的变化更新数据库，“一”端的改变不引起数据库改变。为确保健壮性
+应该在“一”端即这里的Kind设置inverse的属性为true，同时建立双向映射时应该同时修改关联两端的对象的相应属性
+cascade的属性为delete时表示当删除当前对象时会从数据库中级联删除与之关联的对象，即删除kind的同时会删除该kind下的所有post
+cascade的属性默认为none。当为默认值时解除kind和某个post的关联关系时Hibernate不会删除post，如果cascade的属性
+设为all-delete-orphan时则会删除该post。
+ -->
+<set name="posts" inverse="true" order-by="MODIFYTIME ASC">
+<key column="KINDID"></key>
+<one-to-many class="com.bar3.domain.Post"/>
+</set>
+<!-- list元素中必须嵌套index元素否则报错，index元素用于在数据库表中存储元素在list中的位置索引，从0开始。list元素不支持orderby和sort排序，inverse属性不能设为true-->
+<!-- <list name="posts" cascade="save-update" table="Posts" >
+post表中与kind表关联的外键列
+<key column="KindId"></key>
+<index column="index"></index>
+<one-to-many class="com.bar3.domain.Post"/>
+</list> -->
+</class>
+</hibernate-mapping>

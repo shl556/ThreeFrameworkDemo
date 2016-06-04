@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-mapping PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN" "http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd" >
+<hibernate-mapping>
+<class name="com.bar3.domain.User">
+<id name="Id" type="long">
+<meta attribute="use-in-tostring">true</meta>
+<meta attribute="scope-set">private</meta>
+<generator class="native"></generator>
+</id>
+<version name="version" type="integer"/>
+<property name="lgName" type="string" length="15" not-null="true" unique="true">
+<meta attribute="use-in-tostring">true</meta>
+</property>
+<property name="lgPass" type="string" length="20" not-null="true">
+</property>
+<property name="sex" type="integer" not-null="true">
+<meta attribute="use-in-tostring">true</meta>
+</property>
+<property name="nickName" type="string" length="15" not-null="true">
+<meta attribute="use-in-tostring">true</meta>
+</property>
+<property name="headName" type="string" length="20" not-null="true">
+<meta attribute="use-in-tostring">true</meta>
+</property>
+<property name="registerTime" type="date">
+<meta attribute="use-in-tostring">true</meta>
+<column name="REGISTERTIME" sql-type="timestamp"></column>
+</property>
+</class>
+</hibernate-mapping>

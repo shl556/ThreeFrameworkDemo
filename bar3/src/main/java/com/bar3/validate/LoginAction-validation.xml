@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- 指定校验规则文件的DTD信息 -->
+<!DOCTYPE validators PUBLIC "-//Apache Struts//XWork Validator 1.0.3//EN" 
+"http://struts.apache.org/dtds/xwork-validator-1.0.3.dtd"> 
+<!-- 
+strust的国际化分为：1、视图资源的国际化，通过<s:i18n>中的name属性指定国际化资源文件的基名和位置加载资源文件，
+<s:i18n>标签内的标签就可以访问该国际化资源文件中的内容。2、Action范围的国际化，资源文件的基名就是action名，与action类文件放在一起
+由系统自动加载，该action和该action的效验规则文件都可以访问该资源文件。3、包范围的国际化，资源文件的基名就是package，
+放在包下即可，该包下所有的action即对应的效验规则文件都可以访问该文件。4、全局范围的国际化，通过strust.i18n.resource属性
+指定基名和文件位置，由系统自动加载。推荐采用action范围的国际化配置，仅在全局国际化资源文件中配置文件上传或者类型转换失败的错误提示
+ -->
+<!-- 校验规则定义文件的根元素 -->
+<validators>
+	<!-- 校验第一个表单域：username -->
+	<field name="username">
+		<!-- 该表单域必须填写 -->
+		<field-validator type="requiredstring">
+			<!-- 如果校验失败，显示user.required对应的信息 -->
+			<message key="user.required"/>
+		</field-validator>
+	</field>
+	<!-- 校验第二个表单域：password -->
+	<field name="password">
+		<field-validator type="requiredstring">
+			<!-- 如果校验失败，显示pass.required对应的信息 -->
+			<message key="pass.required"/>
+		</field-validator>
+	</field>
+</validators>

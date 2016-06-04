@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jasperReport xmlns="http://jasperreports.sourceforge.net/jasperreports" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://jasperreports.sourceforge.net/jasperreports http://jasperreports.sourceforge.net/xsd/jasperreport.xsd" name="report1" language="groovy" pageWidth="595" pageHeight="842" columnWidth="555" leftMargin="20" rightMargin="20" topMargin="20" bottomMargin="20" uuid="0abdbbfe-f0b3-4050-ad23-17351151785e">
+	<property name="ireport.zoom" value="1.0"/>
+	<property name="ireport.x" value="0"/>
+	<property name="ireport.y" value="0"/>
+	<style name="style1" forecolor="#FF0000" fill="Solid" hAlign="Center" vAlign="Middle" pattern="" fontName="宋体" fontSize="16" isBold="true" isItalic="true" isUnderline="false" pdfFontName="STSong-Light" pdfEncoding="UniGB-UCS2-H"/>
+	<queryString language="SQL">
+		<![CDATA[select * from book_inf]]>
+	</queryString>
+	<field name="book_id" class="java.lang.Integer">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="book_name" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<field name="book_author" class="java.lang.String">
+		<fieldDescription><![CDATA[]]></fieldDescription>
+	</field>
+	<group name="book_id">
+		<groupExpression><![CDATA[$F{book_id}]]></groupExpression>
+	</group>
+	<group name="book_name">
+		<groupExpression><![CDATA[$F{book_name}]]></groupExpression>
+	</group>
+	<group name="book_author">
+		<groupExpression><![CDATA[$F{book_author}]]></groupExpression>
+	</group>
+	<background>
+		<band splitType="Stretch"/>
+	</background>
+	<title>
+		<band height="79" splitType="Stretch">
+			<staticText>
+				<reportElement x="163" y="21" width="190" height="36" uuid="0cfc97f1-6ca1-4efb-bffc-0871caa64b28"/>
+				<textElement textAlignment="Center">
+					<font fontName="宋体" size="24" isBold="true"/>
+				</textElement>
+				<text><![CDATA[疯狂体系图书]]></text>
+			</staticText>
+		</band>
+	</title>
+	<pageHeader>
+		<band height="35" splitType="Stretch">
+			<staticText>
+				<reportElement style="style1" x="419" y="10" width="100" height="20" uuid="ac611858-34b4-403a-bd47-76a22f7a65d2"/>
+				<textElement>
+					<font fontName="宋体" size="14"/>
+				</textElement>
+				<text><![CDATA[作者：孙大圣]]></text>
+			</staticText>
+		</band>
+	</pageHeader>
+	<columnHeader>
+		<band height="61" splitType="Stretch">
+			<staticText>
+				<reportElement x="63" y="26" width="74" height="35" uuid="2f6764d4-b7ff-46c4-b5bd-fb4a29dd8e35"/>
+				<textElement>
+					<font size="16"/>
+				</textElement>
+				<text><![CDATA[ID]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="238" y="26" width="100" height="35" uuid="4485ae74-6a84-49ca-a6a2-ed1aa2b449f7"/>
+				<textElement>
+					<font size="16"/>
+				</textElement>
+				<text><![CDATA[图书名称]]></text>
+			</staticText>
+			<staticText>
+				<reportElement x="444" y="26" width="100" height="35" uuid="0eaedca8-1dde-4943-8959-2312fb54f786"/>
+				<textElement>
+					<font size="16"/>
+				</textElement>
+				<text><![CDATA[作者]]></text>
+			</staticText>
+		</band>
+	</columnHeader>
+	<detail>
+		<band height="47" splitType="Stretch">
+			<textField>
+				<reportElement x="63" y="13" width="100" height="20" uuid="f6a60195-69c7-44fd-a657-611766ff7928"/>
+				<textElement>
+					<font size="14"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{book_id}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="238" y="13" width="115" height="20" uuid="7af961b1-d8cd-42c9-aad1-ef26d3af2405"/>
+				<textElement>
+					<font size="14"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{book_name}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="444" y="13" width="111" height="20" uuid="2811945a-f93f-4de6-9740-f1c97685b4ca"/>
+				<textElement>
+					<font size="14"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{book_author}]]></textFieldExpression>
+			</textField>
+		</band>
+	</detail>
+	<columnFooter>
+		<band height="45" splitType="Stretch"/>
+	</columnFooter>
+	<pageFooter>
+		<band height="54" splitType="Stretch"/>
+	</pageFooter>
+	<summary>
+		<band height="42" splitType="Stretch"/>
+	</summary>
+</jasperReport>

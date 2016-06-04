@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping
+PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<!-- 
+映射继承关系有3种方式：
+1.继承关系树的每个具体类对应一个表，在具体类对应的表中不仅包含和具体类的属性对应的字段，还包含和具体类的父类
+的属性对应的字段。这种映射方式不支持多态关联和多态查询。
+2.继承关系树的根类对应一个表，在根类对应的表中不仅包含和根类的属性对应的字段，还包含和所有子类的属性对应的字段。
+这种映射方式支持多态关联和多态查询，并且能获得最佳的查询性能，缺点是需要对关系数据模型进行非常规设计，在数据库表
+中加入额外的区分各个子类的字段，此外不能为所有子类的属性对应的字段定义not null约束。
+3.继承关系树的每个类对应一个表，在每个类对应的表中只需包含和这个类本身属性对应的字段，子类对应的表参照父类对应的表。
+这种映射方式支持多态关联和多态查询，而且符合关系数据模型的常规设计规则，缺点是它的查询性能不如第二种映射方式。在这种
+映射方式下，必须通过表的内连接或者左外连接来实现多态查询或者多态关联。
+在默认的情况下，对于简单的继承关系树可以采用根类对应一个表的映射方式。如果必须保证关系数据模型的数据完整性，可以采用
+每个类对应一个表的映射方式。对于复杂的继承关系树，可以将它分解为几棵子树，对每棵子树采用不同的映射方式。
+ -->
+<hibernate-mapping package="com.bar3.hibernateDemo4">
+   <!-- 继承关系的根类对应一个表模式，ClassA为根类，ClassC和ClassD直接继承ClassA，ClassG和ClassH直接继承ClassD -->
+   <class name="ClassA" table="TABLE_A" discriminator-value="A" >
+      <id name="id" type="long" column="ID">
+        <generator class="increment"/>
+      </id>
+      <!-- 
+      discriminator元素指定TABLE_A表中用于区分ClassA类型的字段为A_TYPE，
+       -->
+      <discriminator column="A_TYPE" type="string"  />
+      <!-- 父类中的属性值 -->  
+      <property name="a1" type="string" column="A1" />
+      <!-- subclass表示ClassA的子类，discriminator-value的值C表示当A_TYPE的字段为C时，对应的
+                   映射类为ClassC。
+       -->
+      <subclass name="ClassC" discriminator-value="C" >
+         <!-- ClassC中特有的属性 -->
+         <property name="c1" column="C1" type="string" />
+      </subclass>
+
+      <subclass name="ClassD" discriminator-value="D" >
+        <property name="d1" column="D1" type="string" />
+ 
+        <subclass name="ClassG" discriminator-value="G" >
+           <property name="g1" column="G1" type="string" />
+        </subclass>
+        
+        <subclass name="ClassH" discriminator-value="H" >
+           <property name="h1" column="H1" type="string" />
+        </subclass>
+
+      </subclass>
+    </class>
+</hibernate-mapping>
+

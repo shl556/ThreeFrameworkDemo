@@ -1,0 +1,56 @@
+<?xml version="1.0"?>
+<!DOCTYPE hibernate-mapping
+PUBLIC "-//Hibernate/Hibernate Mapping DTD 3.0//EN"
+"http://hibernate.sourceforge.net/hibernate-mapping-3.0.dtd">
+<hibernate-mapping >
+
+  <class name="mypack.Customer" table="CUSTOMERS"  batch-size="3">
+    <id name="id" type="long" column="ID">
+      <generator class="increment"/>
+    </id>
+
+    <property name="name" type="string" >
+        <column name="NAME" length="15" />
+    </property>
+
+   <!-- 
+   Hibernate的检索策略分为类级别和关联级别的检索策略，类级别的检索策略包括立即检索策略和延迟检索策略，
+   默认为延迟检索，仅影响load（）方法，get()方法和Query的list()方法总是立即到数据库中检索对象，而忽略
+   lazy的属性值。关联级别的检索策略分为立即检索、延迟检索和迫切左外连接检索，默认为
+   延迟检索策略，影响Session的load（）方法和get（）方法以及Query API和Criteria API，例外情况是
+   Query API会忽略映射文件中设定的迫切左外连接检索策略。
+    -->
+    <!-- 
+    class元素的lazy属性可选值为true（延迟检索）或者false（立即检索），默认为延迟检索。set元素的lazy属性
+    的可选值为true（延迟检索）、extra（增强延迟检索）和false（立即检索），默认值为延迟检索。增强延迟检索策略与一般的
+    延迟检索策略很相似，主要区别是增强延迟检索策略能进一步延迟Customer对象的orders集合代理类实例的初始化时机。当程序
+ 第一次访问orders属性的iterator方法时会导致orders集合代理类实例的初始化，而当程序第一次访问orders属性的size、
+ contains、isEmpty方法时，Hibernate不会初始化orders集合代理类实例。many-to-one和one-to-one元素的lazy
+ 属性的可选值为proxy（延迟检索）、no-proxy（无代理延迟检索）和false（立即检索）。无代理延迟检索可以避免使用由Hibernate
+ 提供的Customer代理类实例，使Hibernate对程序提供更加透明的持久化服务。
+     -->
+     <!-- 
+     class元素没有fetch属性，set元素的fetch属性的可选值为select、subselect（带子查询的select语句）和join（
+     迫切左外连接检索）。默认为select，当fetch的属性设为join时会忽略lazy属性。当fetch属性为subselect时会忽略batch-size
+     属性。many-to-one和one-to-one元素的fetch属性的可选值为select和join。默认为select，当fetch的属性设为join时会忽略
+  lazy属性。当fetch属性为subselect时会忽略batch-size
+      -->
+      <!-- 
+               对于关联级别的立即检索和延迟检索，可以设置批量检索的数量，以减少select语句的数目，从而改善检索性能。class、set、many-to-one和
+ one-to-one元素的batch-size属性的合理取值在3-10之间。
+       -->
+      <!-- 
+                  属性级别也可设置检索策略，property和component元素的lazy属性为true表示延迟检索，false为立即检索，默认为false。属性
+                  级别的延迟检索策略适用于二进制大对象、字符串大对象和大容量组件类型的属性。
+       -->
+   <set 
+        name="orders"
+        inverse="true"
+        lazy="true" batch-size="3">
+        
+        <key column="CUSTOMER_ID" />
+        <one-to-many class="mypack.Order" />
+     </set>   
+
+  </class>
+</hibernate-mapping>
